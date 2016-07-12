@@ -1,0 +1,16 @@
+<md-card>
+    <md-card-title>Don't see your favorite charity?</md-card-title>
+    <md-card-content>
+        Let us know and we will add it!
+        <div>
+            <md-input placeholder="Charity name" type="text" required name="name" [(ngModel)]="charity.name"></md-input>
+            <md-input placeholder="url" type="text" required name="url" [(ngModel)]="charity.url"></md-input>
+            <md-input placeholder="The charity mission statement" type="text" required name="mission" [(ngModel)]="charity.mission"></md-input>
+            <md-input placeholder="Why do you like this charity?" type="text" required name="why" [(ngModel)]="charity.why"></md-input>
+            <div drop-target drop-stream="media-uploads" drop-indicate="hover-class"></div>
+        </div>
+    </md-card-content>
+    <md-card-actions>
+        <button md-button (click)="submit()">Submit!</button>
+    </md-card-actions>
+</md-card>

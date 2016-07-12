@@ -1,0 +1,13 @@
+<div class="row charity-row" [class.is-selected]="isSelected">
+    <div class="col-sm-2 col-xs-12">
+        <img [src]="charity.imageUrl" alt="Charity image">
+    </div>
+    <div class="col-sm-8 col-xs-12">
+        <a target="_blank" [href]="charity.url"><h3>{{charity.name}}</h3></a>
+        <p>{{charity.mission}}</p>
+    </div>
+    <div class="col-sm-2 col-xs-12">
+        <button *ngIf="!isSelected" md-button (click)="onSelected()">Select</button>
+        <button *ngIf="isSelected" md-button class="md-primary" (click)="onSelected()">Selected</button>
+    </div>
+</div>

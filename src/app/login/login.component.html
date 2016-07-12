@@ -1,0 +1,13 @@
+<md-card>
+    <md-card-title>Login!</md-card-title>
+    <md-card-content>
+        <div *ngFor="let error of errors" class="alert-danger">
+            {{ error.message }}
+        </div>
+        <md-input type="text" [(ngModel)]="user.username" placeholder="Email" (keyup.enter)="login()"></md-input>
+        <md-input type="password" [(ngModel)]="user.password" placeholder="Password" (keyup.enter)="login()"></md-input>
+    </md-card-content>
+    <md-card-actions>
+        <button md-button (click)="login()">Login</button>
+    </md-card-actions>
+</md-card>

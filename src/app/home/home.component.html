@@ -1,0 +1,80 @@
+<div class="home container">
+  <div class="row">
+    <div class="col-sm-9 col-xs-12">
+      <section>
+        <md-card>
+          <md-card-title>
+            Forget the "Hello World" tutorial.
+            <p>Welcome to the "Save The World" tutorial!</p>
+          </md-card-title>
+          <md-card-content>
+            <p>
+              This site is a real life example of the type of application that you can build on Scaphold.io. 
+              We built it with Angular2, Apollo Client, Webpack, and powered it with <a target="_blank" href="https://scaphold.io">Scaphold's</a> GraphQL platform!
+              If you are interested in learning more about how we built this site, check out our full tutorial <a href="">here!</a>.
+            </p>
+            <p>
+              This site is the real deal. At the end of the month, we will donate every penny that you give via this site to the
+              charity of your choice! We use Scaphold's <a href="https://www.stripe.com">Stripe</a> integration to securely process payments
+              and will even email you a receipt and thank you if you login with your email!
+            </p>
+            <p>
+              We curate the set of charities to make sure they are all high quality organizations but would love to add one of your 
+              favorite charities to the list! Submit a charity request using the link in the top right!
+            </p>
+            <p>Thank you for your giving! Let us know if we can do anything else to make your experience a little better!</p>
+          </md-card-content>
+        </md-card>
+      </section>
+
+      <section>
+        <donation></donation>
+      </section>
+    </div>
+    <div class="col-sm-3 col-xs-12">
+      <section>
+        <div *ngIf="!auth.credential.token" class="row">
+          <scaphold-register-form class="col-sm-12"></scaphold-register-form>
+          <scaphold-login-form class="col-sm-12"></scaphold-login-form>
+        </div>
+        <md-card *ngIf="auth.credential.token">
+          <md-card-title>
+            Welcome!
+          </md-card-title>
+          <md-card-content *ngIf="auth.user">
+            Logged in as {{auth.user.username}}
+          </md-card-content>
+          <md-card-actions>
+            <button (click)="auth.logout()" md-button>Logout</button>
+          </md-card-actions>
+        </md-card>
+      </section>
+
+      <section class="pagination">
+        <md-card>
+          <md-card-title>Recent Donations</md-card-title>
+          <md-card-actions>
+            <button md-button (click)="getPreviousPageOfUsers()" class="btn">Previous</button>
+            <button md-button (click)="getNextPageOfUsers()" class="btn">Next</button>
+          </md-card-actions>
+        </md-card>
+      </section>
+      <section class="section-content">
+        <div *ngIf="data.viewer && data.viewer.allDonations">
+          <div *ngFor="let edge of data.viewer.allDonations.edges">
+            <md-card>
+              <md-card-title *ngIf="edge.node.charity">
+                <a target="_blank" [href]="edge.node.charity.url">{{edge.node.charity.name}}</a>
+              </md-card-title>
+              <md-card-content>
+                <div>{{edge.node.description}}</div>
+                <br>
+                <span>$ {{edge.node.amount / 100}}</span>
+              </md-card-content>
+            </md-card>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
