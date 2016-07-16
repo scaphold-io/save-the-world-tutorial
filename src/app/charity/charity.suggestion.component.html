@@ -1,0 +1,40 @@
+<div class="container">
+    <md-card class="row" *ngIf="!submitted">
+        <form (submit)="onSubmit($event)" #charityForm="ngForm">
+            <md-card-title>Don't see your favorite charity?</md-card-title>
+            <md-card-content>
+                <p>Let us know and we will add it!</p>
+                <md-input id="charity-form-name" class="col-sm-4" placeholder="Charity name" type="text" required name="name" [(ngModel)]="charitySuggestion.name"></md-input>
+                <md-input id="charity-form-url" class="col-sm-4" placeholder="URL to charity homepage" type="text" required name="url" [(ngModel)]="charitySuggestion.url"></md-input>
+                <md-input id="charity-form-image-url" class="col-sm-4" placeholder="URL to a charity logo" type="text" required name="imageUrl" [(ngModel)]="charitySuggestion.imageUrl"></md-input>
+                <md-input id="charity-form-mission" class="col-sm-12" placeholder="The charity mission statement" type="text" required name="mission" [(ngModel)]="charitySuggestion.mission"></md-input>
+                <md-input id="charity-form-reason" class="col-sm-12" placeholder="Why do you like this charity?" type="text" required name="reason" [(ngModel)]="charitySuggestion.reason"></md-input>
+            </md-card-content>
+            <md-card-actions>
+                <button class="col-sm-12" md-button type="submit" [disabled]="!charityForm.form.valid">Submit!</button>
+            </md-card-actions>
+        </form>
+    </md-card>
+    <md-card class="row">
+        <md-card-title *ngIf="submitted">
+            Thanks for the suggestion!
+        </md-card-title>
+        <md-card-content>
+            <div class="col-md-4 col-sm-12">
+                <img *ngIf="charitySuggestion.imageUrl" [src]="charitySuggestion.imageUrl" [alt]="charitySuggestion.name">
+            </div>
+            <div class="col-md-8 col-sm-12">
+                <a href="{{ charitySuggestion.url }}"><h2>{{ charitySuggestion.name }}</h2></a>
+                <p>
+                    {{charitySuggestion.mission}}
+                </p>
+                <p>
+                    {{charitySuggestion.reason}}
+                </p>
+            </div>
+        </md-card-content>
+        <md-card-actions *ngIf="submitted">
+            <button class="col-sm-12" md-button (click)="resetSubmission()">Submit Again</button>
+        </md-card-actions>
+    </md-card>
+</div>

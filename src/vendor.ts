@@ -22,7 +22,4 @@ import '@angular2-material/grid-list';
 // Helper grid for responsive design
 import 'bootstrap-grid';
 
-// File drop directive
-import 'a2-file-drop/src/drop-target';
-
 import 'card';

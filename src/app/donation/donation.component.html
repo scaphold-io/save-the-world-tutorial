@@ -6,7 +6,7 @@
             Keep being awesome!
         </md-card-content>
         <md-card-actions>
-            <button md-button (click)="donated=false">Make Another Donation!</button>
+            <button md-button (click)="donated=false;initializeCard();">Make Another Donation!</button>
         </md-card-actions>
     </md-card>
 </div>
@@ -45,11 +45,11 @@
                     </div>
                     <md-input id="name" class="col-sm-12" placeholder="Full Name" type="text" required name="name" [(ngModel)]="donation.card.name"></md-input>
                     <md-input id="number" class="col-sm-12" placeholder="Card number" type="text" required name="number" [(ngModel)]="donation.card.number"></md-input>
-                    <md-input id="expiry" class="col-sm-3" placeholder="MM/YY" type="text" required name="expiry" [(ngModel)]="donation.card.expiry"></md-input>
-                    <md-input id="cvc" class="col-sm-3" placeholder="CVC" type="number" required name="cvc" [(ngModel)]="donation.card.cvc"></md-input>
+                    <md-input id="expiry" class="col-sm-6" placeholder="MM/YY" type="text" required name="expiry" [(ngModel)]="donation.card.expiry"></md-input>
+                    <md-input id="cvc" class="col-sm-6" placeholder="CVC" type="number" required name="cvc" [(ngModel)]="donation.card.cvc"></md-input>
                 </md-card-content>
-                <md-card-actions>
-                    <button [disabled]="!paymentForm.form.valid" md-button type="submit">Donate</button>
+                <md-card-actions >
+                    <button class="col-sm-12" [disabled]="!paymentForm.form.valid" md-button type="submit">Donate</button>
                 </md-card-actions>
             </form>
             <div class="col-sm-6 col-xs-12 card-wrapper"></div>

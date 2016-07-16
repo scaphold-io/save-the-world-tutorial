@@ -109,7 +109,7 @@ export class AuthService {
                     throw error;
                 }).bind(this)
             });
-        })
+        });
     }
 
     /**

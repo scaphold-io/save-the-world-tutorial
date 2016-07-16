@@ -19,9 +19,6 @@ import '../style/app.scss';
 })
 export class AppComponent {
   url = 'https://scaphold.io';
-  auth: any;
 
-  constructor(auth: AuthService) {
-    this.auth = auth;
-  }
+  constructor() {}
 }

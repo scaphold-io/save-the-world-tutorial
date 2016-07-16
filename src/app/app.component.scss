@@ -1,3 +1,4 @@
+$brand-primary: #5f9e96;
 // styles applied on :host are applied on the current component, "app" in this case
 :host {
   display: block;
@@ -15,14 +16,18 @@ header {
 }
 
 md-toolbar {
-  box-shadow: 0 1px #FFFFFF inset, 0 1px 3px rgba(34, 25, 25, 0.4);
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 1px #FFFFFF inset, 0 1px 3px rgba(34, 25, 25, 0.3);
   .md-toolbar-fill-remaining-space {
     flex: 1 1 auto;
   }
+  // border-bottom: 1px solid $brand-primary;
 }
 
 main {
   padding: 1em;
+  padding-top: 90px;
   display: block;
 }
 
@@ -30,4 +35,8 @@ footer {
   text-align: center;
   font-size: 1.0em;
   padding-bottom: 10px;
+  color: white;
+  a {
+    color: white;
+  }
 }

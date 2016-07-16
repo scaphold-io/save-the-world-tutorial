@@ -19,7 +19,15 @@ import { MD_GRID_LIST_DIRECTIVES } from '@angular2-material/grid-list';
   selector: 'home-page',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  directives: [RegisterComponent, LoginComponent, MD_CARD_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_BUTTON_DIRECTIVES, MD_GRID_LIST_DIRECTIVES, DonationComponent]
+  directives: [
+    RegisterComponent,
+    LoginComponent,
+    MD_CARD_DIRECTIVES,
+    MD_INPUT_DIRECTIVES,
+    MD_BUTTON_DIRECTIVES,
+    MD_GRID_LIST_DIRECTIVES,
+    DonationComponent
+  ]
 })
 @Apollo({
   client,
@@ -87,7 +95,9 @@ export class HomeComponent implements OnInit {
   }
 
   getPreviousPageOfDonations() {
-    const mayHavePreviousPage = has(this.data, 'viewer.allDonations.pageInfo') && this.data.viewer.allDonations.pageInfo.hasPreviousPage || this.last === null;
+    const mayHavePreviousPage = has(this.data, 'viewer.allDonations.pageInfo')
+                                && this.data.viewer.allDonations.pageInfo.hasPreviousPage
+                                || this.last === null;
     if (mayHavePreviousPage) {
       const edgeCount = this.data.viewer.allDonations.edges.length;
       const beforeCursor = (edgeCount > 0) ? this.data.viewer.allDonations.edges[0]['cursor'] : null;
@@ -105,7 +115,9 @@ export class HomeComponent implements OnInit {
    * See https://facebook.github.io/relay/graphql/connections.htm for more info 
    */
   getNextPageOfDonations() {
-    const mayHaveNextPage = has(this.data, 'viewer.allDonations.pageInfo') && this.data.viewer.allDonations.pageInfo.hasNextPage || this.first === null;  
+    const mayHaveNextPage = has(this.data, 'viewer.allDonations.pageInfo')
+                            && this.data.viewer.allDonations.pageInfo.hasNextPage
+                            || this.first === null;
     if (mayHaveNextPage) {
       const edgeCount = this.data.viewer.allDonations.edges.length;
       const afterCursor = (edgeCount > 0) ? this.data.viewer.allDonations.edges[edgeCount - 1]['cursor'] : null;

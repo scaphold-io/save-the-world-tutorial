@@ -1,26 +1,25 @@
 <div class="home container">
   <div class="row">
-    <div class="col-sm-9 col-xs-12">
+    <div class="col-md-9 col-sm-12">
       <section>
         <md-card>
           <md-card-title>
-            Forget the "Hello World" tutorial.
-            <p>Welcome to the "Save The World" tutorial!</p>
+            Welcome to the "Save The World" tutorial!
           </md-card-title>
           <md-card-content>
             <p>
-              This site is a real life example of the type of application that you can build on Scaphold.io. 
+              This is an example of the types of application that you can build on Scaphold.io. 
               We built it with Angular2, Apollo Client, Webpack, and powered it with <a target="_blank" href="https://scaphold.io">Scaphold's</a> GraphQL platform!
-              If you are interested in learning more about how we built this site, check out our full tutorial <a href="">here!</a>.
+              If you are interested in learning more about how we built this site, check out our <a target="_blank" href="https://scaphold.io/#/blog">full tutorial</a>!
             </p>
             <p>
               This site is the real deal. At the end of the month, we will donate every penny that you give via this site to the
-              charity of your choice! We use Scaphold's <a href="https://www.stripe.com">Stripe</a> integration to securely process payments
+              charity of your choice! We use Scaphold's <a target="_blank" href="https://www.stripe.com">Stripe</a> integration to securely process payments
               and will even email you a receipt and thank you if you login with your email!
             </p>
             <p>
-              We curate the set of charities to make sure they are all high quality organizations but would love to add one of your 
-              favorite charities to the list! Submit a charity request using the link in the top right!
+              If you would like a charity added to this list, suggest it using using the link in the top right!
+              We curate the set of charities to guarantee they are high quality organizations but would love to add your favorites! 
             </p>
             <p>Thank you for your giving! Let us know if we can do anything else to make your experience a little better!</p>
           </md-card-content>
@@ -31,7 +30,7 @@
         <donation></donation>
       </section>
     </div>
-    <div class="col-sm-3 col-xs-12">
+    <div class="col-md-3 col-sm-12">
       <section>
         <div *ngIf="!auth.credential.token" class="row">
           <scaphold-register-form class="col-sm-12"></scaphold-register-form>

@@ -16,6 +16,9 @@ import { MD_BUTTON_DIRECTIVES } from '@angular2-material/button';
 import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { MD_GRID_LIST_DIRECTIVES } from '@angular2-material/grid-list';
 
+// Our email template as a string.
+import { emailTemplate } from './email.inlined.template.ts';
+
 class CreditCard {
   constructor(
     public name: string,
@@ -34,6 +37,16 @@ export class Donation {
         public amount: number,
         public card: CreditCard
     ) { }
+}
+
+export class Email {
+  constructor(
+    public to: string[],
+    public from: string,
+    public subject: string,
+    public text: string,
+    public isHtml: boolean 
+  ) {}
 }
 
 @Component({
@@ -130,7 +143,7 @@ export class Donation {
         `,
         variables: {
           input: {
-            amount: context.donation.amount*100,
+            amount: context.donation.amount * 100,
             currency: 'USD',
             source: token,
             receipt_email: 'mlparis92@gmail.com',
@@ -156,11 +169,24 @@ export class Donation {
         variables: {
           input: {
             description: context.donation.description,
-            amount: context.donation.amount*100,
+            amount: context.donation.amount * 100,
             stripeChargeId: stripeChargeId,
             charityId: context.donation.charity.id,
             userId: context.auth.user ? context.auth.user.id : ''
           }
+        }
+      }),
+      sendEmail: (email: Email) => ({
+        mutation: gql`
+          mutation sendMailgunEmailQuery($email: _SendMailgunEmailInput!){
+            sendMailgunEmail(input: $email) {
+              id
+              message
+            }
+          }
+        `,
+        variables: {
+          email: email
         }
       })
     };
@@ -174,6 +200,7 @@ export class DonationComponent implements OnInit, AfterViewInit {
   createStripeToken: () => Promise<GraphQLResult>;
   createStripeCharge: (token: string) => Promise<GraphQLResult>;
   createDonation: (stripeChageId: string) => Promise<GraphQLResult>;
+  sendEmail: (email: Email) => Promise<GraphQLResult>;
 
   /**
    * AuthService
@@ -187,7 +214,7 @@ export class DonationComponent implements OnInit, AfterViewInit {
   donation: Donation;
   charities: any;
   cardJS: any;
-  errors: Array<GraphQLError>
+  errors: Array<GraphQLError>;
 
   constructor(private apollo: Angular2Apollo, auth: AuthService, private window: Window) {
     this.auth = auth;
@@ -206,15 +233,15 @@ export class DonationComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     // Do stuff after the component template is done loading.
-    this.initializeCard(this.window);
+    this.initializeCard();
   }
 
-  initializeCard(window) {
-    const CardJS = window['Card'];
+  initializeCard() {
+    const CardJS = this.window['Card'];
     this.cardJS = new CardJS({
       // a selector or DOM element for the form where users will be entering their information
       form: '#paymentForm', // *required*
-      
+
       // where you want the card to appear
       container: '.card-wrapper', // *required*
 
@@ -233,6 +260,30 @@ export class DonationComponent implements OnInit, AfterViewInit {
     this.donation.charity = charity;
   }
 
+  handleGraphQLErrors(errors) {
+    if (this.errors) {
+      this.errors = errors;
+      throw errors;
+    }
+  }
+
+  sendReceiptEmail(donation : Donation) {
+    if (this.auth.user.username) {
+      const email = new Email(
+        [this.auth.user.username],
+        'give@scaphold.io',
+        'Thank You for Donating!',
+        emailTemplate,
+        true
+      );
+      this.sendEmail(email).then(({errors, data}) => {
+        console.log('Successfully sent email');
+      }).catch(err => {
+        console.log(`Error sending email: ${err.message}`);
+      });
+    }
+  }
+
   onSubmit(event) {
     if (event) { event.preventDefault(); }
     if (!this.donation.charity.id) {
@@ -241,37 +292,29 @@ export class DonationComponent implements OnInit, AfterViewInit {
     }
     try {
       const [month, year] = this.donation.card.expiry.split('/');
-      this.donation.card.expMonth = parseInt(month);
-      this.donation.card.expYear = parseInt(year);
+      this.donation.card.expMonth = parseInt(month, 10);
+      this.donation.card.expYear = parseInt(year, 10);
       this.donation.card.number = document.querySelector('input[name=number]')['value'];
     } catch (e) {
       this.errors = [new GraphQLError(`Invalid expiry ${this.donation.card.expiry}. Expected MM/YY`)];
       return;
     }
-    this.createStripeToken().then(({data, errors} : GraphQLResult) => {
-      if (errors) {
-        this.errors = errors;
-        return;
-      }
-      const token = has(data, 'createStripeCardToken.token') ? data['createStripeCardToken']['token']['id'] : null; 
+    this.createStripeToken().then(({data, errors}: GraphQLResult) => {
+      this.handleGraphQLErrors(errors);
+      const token = has(data, 'createStripeCardToken.token') ? data['createStripeCardToken']['token']['id'] : null;
       return this.createStripeCharge(token);
-    }).then(({data, errors} : GraphQLResult) => {
-      if (errors) {
-        this.errors = errors;
-        return;
-      }
+    }).then(({data, errors}: GraphQLResult) => {
+      this.handleGraphQLErrors(errors);
       const charge = has(data, 'createStripeCharge.charge') ? data['createStripeCharge']['charge'] : {};
-      return this.createDonation(charge['id'])
+      return this.createDonation(charge['id']);
     }).then(({errors, data}) => {
-      if (errors) {
-        this.errors = errors;
-        return;
-      }
+      this.handleGraphQLErrors(errors);
       this.donated = true;
+      this.sendReceiptEmail(this.donation);
       this.resetDonation();
       return data;
     }).catch(err => {
       console.log(`Error donating ${err.message}`);
-    })
+    });
   }
 }

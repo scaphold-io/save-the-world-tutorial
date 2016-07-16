@@ -3,17 +3,15 @@
   <span>The Save The World Tutorial!</span>
   <span class="md-toolbar-fill-remaining-space"></span>
   <a md-button [routerLink]="['']">Give</a>
-  <a md-button [routerLink]="['submit']">Submit</a>
-  <a md-button [routerLink]="['about']">About</a>
+  <a md-button [routerLink]="['request']">Suggest A Charity</a>
+  <a md-button [routerLink]="['tutorial']">Tutorial</a>
 </md-toolbar>
 <main>
   <router-outlet></router-outlet>
 </main>
 <footer>
   <div class="img-container">
-    <!--<a target="_blank" href="https://angular.io"><img src="https://angular.io/resources/images/logos/standard/shield-large.png" alt="Angular2"></a>-->
-    <a target="_blank" href="https://scaphold.io"><img src="https://scaphold.io/images/scaphold-logo-90x90.png" alt="Scaphold"></a>
-    <!--<a target="_blank" href="http://docs.apollostack.com/apollo-client/index.html"><img src="http://docs.apollostack.com/logo/square.png" alt="Apollo Client"></a>-->
+    <a target="_blank" href="https://scaphold.io"><img src="img/logo-white-90x90.jpg" alt="Scaphold"></a>
   </div>
   <h4>Brought to you by <a target="_blank" [href]="url">scaphold.io</a></h4>
 </footer>

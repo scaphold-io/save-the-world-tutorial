@@ -1,10 +1,16 @@
 // styles in src/style directory are applied to the whole page
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400,700);
 * { box-sizing: border-box; }
 body {
-    background: #e9ebee;
+    // background: #e9ebee;
     color: #000;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Lato', sans-serif;
+    background: url(../public/img/background.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 a {
     cursor: pointer;
@@ -17,7 +23,8 @@ a {
 }
 
 md-card {
-  margin-bottom: 10px;
+    background:rgba(255,255,255,0.96)!important;
+    margin-bottom: 10px;
 }
 
 .alert-danger {

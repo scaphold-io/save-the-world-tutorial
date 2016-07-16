@@ -39,7 +39,6 @@
     "@angular2-material/grid-list": "^2.0.0-alpha.6",
     "@angular2-material/input": "^2.0.0-alpha.6",
     "@angular2-material/toolbar": "^2.0.0-alpha.6",
-    "a2-file-drop": "^2.0.3",
     "angular2": "^2.0.0-beta.17",
     "angular2-apollo": "^0.3.0",
     "apollo-client": "^0.3.24",
