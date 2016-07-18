@@ -9,6 +9,7 @@ import {GraphQLResult, GraphQLError} from 'graphql';
 import {AuthService} from '../shared';
 import client from '../client';
 import {CharityComponent, Charity} from '../charity';
+import { WindowService } from '../../windowService';
 
 // Angular Material
 import { MD_CARD_DIRECTIVES } from '@angular2-material/card';
@@ -45,7 +46,7 @@ export class Email {
     public from: string,
     public subject: string,
     public text: string,
-    public isHtml: boolean 
+    public isHtml: boolean
   ) {}
 }
 
@@ -96,7 +97,7 @@ export class Email {
     return {
       createStripeToken: () => ({
         mutation: gql`
-          mutation CreateCardToken($input: _CreateStripeCardTokenInput!) {
+          mutation CreateStripeToken($input: _CreateStripeCardTokenInput!) {
             createStripeCardToken(input: $input) {
               token {
                 id
@@ -146,7 +147,7 @@ export class Email {
             amount: context.donation.amount * 100,
             currency: 'USD',
             source: token,
-            receipt_email: 'mlparis92@gmail.com',
+            receipt_email: (has(context.auth, 'user.username')) ? context.auth.user.username : '',
             capture: true
           }
         }
@@ -206,6 +207,7 @@ export class DonationComponent implements OnInit, AfterViewInit {
    * AuthService
    */
   auth: AuthService;
+  window: Window;
 
   /**
    * Models.
@@ -216,15 +218,20 @@ export class DonationComponent implements OnInit, AfterViewInit {
   cardJS: any;
   errors: Array<GraphQLError>;
 
-  constructor(private apollo: Angular2Apollo, auth: AuthService, private window: Window) {
+  constructor(private apollo: Angular2Apollo, auth: AuthService, windowSvc: WindowService) {
     this.auth = auth;
-    this.resetDonation();
+    this.window = windowSvc.window;
+    this.initDonation();
   }
 
-  resetDonation() {
+  initDonation() {
     const card = new CreditCard('', '', null, null, null, null);
     const charity = new Charity(null, null, null, null, null);
     this.donation = new Donation(charity, '', 5, card);
+  }
+
+  resetDonation() {
+    this.window.location.reload();
   }
 
   ngOnInit() {
@@ -267,8 +274,8 @@ export class DonationComponent implements OnInit, AfterViewInit {
     }
   }
 
-  sendReceiptEmail(donation : Donation) {
-    if (this.auth.user.username) {
+  sendReceiptEmail(donation: Donation) {
+    if (has(this.auth, 'user.username')) {
       const email = new Email(
         [this.auth.user.username],
         'give@scaphold.io',
@@ -311,7 +318,6 @@ export class DonationComponent implements OnInit, AfterViewInit {
       this.handleGraphQLErrors(errors);
       this.donated = true;
       this.sendReceiptEmail(this.donation);
-      this.resetDonation();
       return data;
     }).catch(err => {
       console.log(`Error donating ${err.message}`);

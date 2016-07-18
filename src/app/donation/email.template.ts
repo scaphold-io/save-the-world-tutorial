@@ -192,7 +192,7 @@ ol li {
         <tr>
           <td>
             <h1>Thank You!</h1>
-            <p>You're the bomb.com! Thanks for giving through our Save the World Tutorial! If you are interested in learning more about how we built give.scaphold.io take a look at our <a href="https://scaphold.io/#/blog">full tutorial</a>.</p>
+            <p>You're the bomb.com! Thanks for giving through our Save the World Tutorial! If you are interested in learning more about how we built give.scaphold.io take a look at our <a href="https://scaphold.io/blog">full tutorial</a>.</p>
             <p>You can also find the full source code for the site on <a href="https://github.com/scaphold-io/angular2-apollo-client-webpack-starter">Github</a>.</p>
             <h2>Start building your own apps today</h2>
             <p>Scaphold saves your time and money by letting you build backend services in a fraction of the time.

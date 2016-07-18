@@ -1,7 +1,8 @@
-import { enableProdMode, provide } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { ELEMENT_PROBE_PROVIDERS } from '@angular/platform-browser';
 import { disableDeprecatedForms, provideForms } from '@angular/forms';
+import { WindowService } from './windowService';
 
 // Our AppComonent and routes
 import { AppComponent } from './app/app.component';
@@ -30,7 +31,8 @@ const app = bootstrap(AppComponent, [
     ENV_PROVIDERS,
     disableDeprecatedForms(),
     provideForms(),
-    provide(Window, {useValue: window})
+    WindowService
+
     // { provide: LocationStrategy, useClass: HashLocationStrategy } // uncomment this to use #/ routes 
   ])
   .catch(err => console.error(err));
