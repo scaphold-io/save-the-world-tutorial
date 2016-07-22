@@ -1,6 +1,5 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import {
-  Angular2Apollo,
   Apollo
 } from 'angular2-apollo';
 import gql from 'graphql-tag';
@@ -10,6 +9,8 @@ import {AuthService} from '../shared';
 import client from '../client';
 import {CharityComponent, Charity} from '../charity';
 import { WindowService } from '../../windowService';
+import {LoginComponent} from '../login';
+import {RegisterComponent} from '../register';
 
 // Angular Material
 import { MD_CARD_DIRECTIVES } from '@angular2-material/card';
@@ -50,12 +51,6 @@ export class Email {
   ) {}
 }
 
-@Component({
-  selector: 'donation',
-  templateUrl: './donation.component.html',
-  styleUrls: ['./donation.component.scss'],
-  directives: [MD_CARD_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_BUTTON_DIRECTIVES, MD_GRID_LIST_DIRECTIVES, CharityComponent]
-})
 @Apollo({
   client,
   queries(context) {
@@ -193,7 +188,20 @@ export class Email {
     };
   }
 })
-export class DonationComponent implements OnInit, AfterViewInit {
+@Component({
+  selector: 'donation-form',
+  templateUrl: './donation.form.component.html',
+  styleUrls: ['./donation.form.component.scss'],
+  directives: [
+    MD_CARD_DIRECTIVES, 
+    MD_INPUT_DIRECTIVES, 
+    MD_BUTTON_DIRECTIVES, 
+    MD_GRID_LIST_DIRECTIVES, 
+    CharityComponent, 
+    LoginComponent,
+    RegisterComponent]
+})
+export class DonationFormComponent implements OnInit, AfterViewInit {
 
   /**
    * Our @Apollo mutations
@@ -216,9 +224,9 @@ export class DonationComponent implements OnInit, AfterViewInit {
   donation: Donation;
   charities: any;
   cardJS: any;
-  errors: Array<GraphQLError>;
+  errors: Array<GraphQLError> = [];
 
-  constructor(private apollo: Angular2Apollo, auth: AuthService, windowSvc: WindowService) {
+  constructor(auth: AuthService, windowSvc: WindowService) {
     this.auth = auth;
     this.window = windowSvc.window;
     this.initDonation();
@@ -320,6 +328,7 @@ export class DonationComponent implements OnInit, AfterViewInit {
       this.sendReceiptEmail(this.donation);
       return data;
     }).catch(err => {
+      this.errors.push(err);
       console.log(`Error donating ${err.message}`);
     });
   }

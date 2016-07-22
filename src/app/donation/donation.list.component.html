@@ -1,0 +1,24 @@
+<md-card class="pagination">
+    <md-card-title>
+        Recent Donations
+    </md-card-title>
+    <md-card-actions>
+        <button md-button (click)="getPreviousPage()" class="btn">Previous</button>
+        <button md-button (click)="getNextPage()" class="btn">Next</button>
+    </md-card-actions>
+</md-card>
+<div *ngIf="data.viewer && data.viewer.allDonations">
+    <div *ngFor="let edge of data.viewer.allDonations.edges">
+        <md-card>
+            <md-card-title *ngIf="edge.node.charity">
+                <a target="_blank" [href]="edge.node.charity.url">{{edge.node.charity.name}}</a>
+            </md-card-title>
+            <md-card-content>
+                <div>{{edge.node.description}}</div>
+                <br>
+                <span>$ {{edge.node.amount / 100}}</span>
+                <span style="float: right;">{{ edge.node.createdAt | date:"MM/dd/yy"}}</span>
+            </md-card-content>
+        </md-card>
+    </div>
+</div>

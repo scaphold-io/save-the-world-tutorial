@@ -1,6 +1,6 @@
 <div class="home container">
   <div class="row">
-    <div class="col-md-9 col-sm-12">
+    <div class="col-md-8 col-sm-12">
       <section>
         <md-card>
           <md-card-title>
@@ -26,56 +26,12 @@
           </md-card-content>
         </md-card>
       </section>
-
       <section>
-        <div *ngIf="!auth.credential.token" class="row">
-          <scaphold-register-form class="col-md-6"></scaphold-register-form>
-          <scaphold-login-form class="col-md-6"></scaphold-login-form>
-        </div>
-        <md-card *ngIf="auth.credential.token">
-          <md-card-title>
-            Welcome!
-          </md-card-title>
-          <md-card-content *ngIf="auth.user">
-            Logged in as {{auth.user.username}}
-          </md-card-content>
-          <md-card-actions>
-            <button (click)="auth.logout()" md-button>Logout</button>
-          </md-card-actions>
-        </md-card>
-      </section>
-
-      <section>
-        <donation></donation>
+        <donation-form></donation-form>
       </section>
     </div>
-    <div class="col-md-3 col-sm-12">
-
-      <section class="pagination">
-        <md-card>
-          <md-card-title>Recent Donations</md-card-title>
-          <md-card-actions>
-            <button md-button (click)="getPreviousPageOfUsers()" class="btn">Previous</button>
-            <button md-button (click)="getNextPageOfUsers()" class="btn">Next</button>
-          </md-card-actions>
-        </md-card>
-      </section>
-      <section class="section-content">
-        <div *ngIf="data.viewer && data.viewer.allDonations">
-          <div *ngFor="let edge of data.viewer.allDonations.edges">
-            <md-card>
-              <md-card-title *ngIf="edge.node.charity">
-                <a target="_blank" [href]="edge.node.charity.url">{{edge.node.charity.name}}</a>
-              </md-card-title>
-              <md-card-content>
-                <div>{{edge.node.description}}</div>
-                <br>
-                <span>$ {{edge.node.amount / 100}}</span>
-              </md-card-content>
-            </md-card>
-          </div>
-        </div>
-      </section>
+    <div class="col-md-4 col-sm-12">
+      <donation-list></donation-list>
     </div>
   </div>
 </div>

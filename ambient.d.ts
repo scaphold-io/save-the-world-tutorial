@@ -21,18 +21,3 @@ declare module 'graphql/language/parser' {
 declare module 'graphql/language/printer' {
   function print(ast: any): string;
 }
-
-// declare module 'card' {
-//     class CardConfig {
-//         public form: string;
-//         public container: string;
-//         public formSelectors: any;
-//         public width: number;
-//         public formatting: boolean;
-//         public messages: any;
-//         public placeholders: any;
-//         public debug: boolean;
-//     }
-
-//     export function Card(config: CardConfig) : void;
-// }

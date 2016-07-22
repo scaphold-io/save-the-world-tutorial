@@ -262,5 +262,6 @@ module.exports = function makeWebpackConfig() {
 // Helper functions
 function root(args) {
   args = Array.prototype.slice.call(arguments, 0);
-  return path.join.apply(path, [__dirname].concat(args));
+  var ro = path.join.apply(path, [__dirname].concat(args));
+  return ro;
 }

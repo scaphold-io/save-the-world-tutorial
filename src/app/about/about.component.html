@@ -1,72 +1,239 @@
 <div class="container">
   <md-card>
-<h1><a id="Build_a_website_for_Charity_with_Angular2_and_GraphQL_0"></a>Build a website for Charity with Angular2 and GraphQL</h1>
-<p>Today we are going to design, build, and deploy a website into production. Even better, we are going to do it using GraphQL, Angular JS 2.0, Apollo Client, and <a href="https://scaphold.io">Scaphold.io</a>. Forget the “Hello, world” tutorial, we’re going to build the “Save the world” tutorial. Check out the <a href="https://give.scaphold.io">final product here</a>!</p>
-<p>We are going to learn some awesome new tech and, at the same time, we are going to try to give something back. We’ll be building a social donation <a href="https://give.scaphold.io">app</a> of sorts. We are going to use <a href="https://scaphold.io">Scaphold’s</a> <a href="https://stripe.com">Stripe</a> integration to securely process payments, <a href="https://mailgun.com">Mailgun</a> to email receipts and, at the end of every month, I will personally donate every cent you give to the charity of your choice.</p>
+<h1><a id="Building_an_API_for_Charity_with_Stripe_and_GraphQL_0"></a>Building an API for Charity with Stripe and GraphQL</h1>
+<p><img src="https://scaphold.io/images/blog/angular-scaphold-apollo.png" alt=""></p>
+<p>Today we are going to design, build, and deploy a website into production. Even better, we are going to do it using GraphQL, Angular JS 2.0, Apollo Client, and <a href="https://scaphold.io/">Scaphold.io</a>. Forget the “Hello, world” tutorial, we’re going to build the “Save the world” tutorial. Check out the <a href="https://give.scaphold.io/">final product here</a>!</p>
+<p>We are going to learn some awesome new tech while we try to give something back. We’ll be building a social donation app of sorts. We are going to use Scaphold’s Stripe integration to securely process payments, Mailgun to email receipts and, at the end of every month, I will personally donate every cent you give to the charity of your choice.</p>
 <p>Let start with a high-level overview of our stack:</p>
 <ol>
 <li>
-<p><a href="https://angular.io">Angular2</a>: A performant, modular frontend framework started at Google.</p>
+<p><a href="https://angular.io">Angular2</a>: A performant, modular frontend framework started at Google. Angular2 is written in TypeScript and fully embraces modern JavaScript development practices.</p>
 </li>
 <li>
-<p><a href="https://scaphold.io">Scaphold.io</a>: A backend services platform powered by GraphQL. Scaphold saves you time by making it easy to create GraphQL APIs to power your front-end apps. In addition to their distributed data store, we will use their Stripe and Mailgun integrations to instantly tie payments and email into our application.</p>
+<p><a href="https://scaphold.io">Scaphold.io</a>: A backend as a service platform powered by GraphQL. Scaphold makes it easy to define a data model and deploy a distributed API as well as integrate third party services to expand the functionality of your API. We will use their Stripe and Mailgun integrations to instantly add payments and email support to our API.</p>
 </li>
 <li>
-<p><a href="https://github.com/apollostack/apollo-client">Apollo Client</a>: A powerful GraphQL client that is versatile and easy to use. Apollo Client sits at the junction of Angular and Scaphold.</p>
+<p><a href="https://github.com/apollostack/apollo-client">Apollo Client</a>: A powerful GraphQL client that is versatile and easy to use. Apollo Client sits at the junction of Angular and Scaphold and is my favorite tool for hooking client apps up to GraphQL APIs.</p>
 </li>
 <li>
-<p><a href="https://webpack.github.io/">Webpack</a>: A popular module bundler that greatly simplifies the process of managing, building, and deploying large web projects.</p>
+<p><a href="https://webpack.github.io/">Webpack</a>: A popular module bundler that greatly simplifies the process of managing, building, and deploying large web projects. We will use this to package our npm packages and other resources to run smoothly in the browser.</p>
 </li>
 </ol>
 <p>We’ve got a lot to cover so we’re going to do it in two parts. This is <strong>part 1</strong> where we will go over how to build a payments &amp; email enabled GraphQL API using <a href="https://scaphold">Scaphold’s</a> GraphQL platform. Let’s get started!</p>
-<h2><a id="The_GraphQL_API_18"></a>The GraphQL API</h2>
+<h2><a id="The_Core_API_20"></a>The Core API</h2>
 <p>Before we start building our Angular app, lets set up our API. <a href="https://scaphold.io">Scaphold</a> provides a lot of tools and services that make building a GraphQL API easy. To start, go to <a href="https://scaphold.io">scaphold.io</a> and create an app.</p>
 <p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*h7bMFCr8T7xVxs--SS8Z1A.png" alt=""></p>
 <p>Once you have an app, you will be taken to the Schema Designer where you can define your data model by creating types and adding fields to those types. A large benefit of GraphQL is its rich type system that helps us cleaner, safer APIs. Our application will use simple data model. We’ll have 4 types: User, Charity, Donation, and CharitySuggestion. When you are done, the Schema Designer should look like this.</p>
 <p>Start by creating the four types <em>User, Charity, Donation, and CharitySuggestion</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/5616/1*ngEsXe8hR-hPRQ7UUkzSlQ.png" alt="A User comes with “roles” out of the box. We will use these in a minute."></p>
-<p><em>A <strong>User</strong> comes with “roles” out of the box. We will use these in a minute.</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/5608/1*10XrmX5JzZE6IChLzfeNBA.png" alt="A Charity has a name, mission, url (to their homepage), imageUrl (to their logo) and a connection to a set of donations."></p>
-<p><em>A <strong>Charity</strong> has a name, mission, url (to their homepage), imageUrl (to their logo) and a connection to a set of donations.</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/5600/1*IC6AADK05gPngRPTw5rZ-Q.png" alt="A Donation has a charity, user, description, amount, and stripeChargeId."></p>
-<p><em>A <strong>Donation</strong> has a charity, user, description, amount, and stripeChargeId.</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/5600/1*s33FGQXXZk1VkI64otxsuQ.png" alt="A CharitySuggestion is like a Charity but is not protected by admin permissions. Anyone can suggest a charity be added to the site."></p>
-<p><em>A <strong>CharitySuggestion</strong> is like a Charity but is not protected by admin permissions. Anyone can suggest a charity be added to the site.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/5616/1*ngEsXe8hR-hPRQ7UUkzSlQ.png" alt="A User comes with “roles” out of the box. We will use these in a minute."> <em>A <strong>User</strong> comes with “roles” out of the box. We will use these in a minute.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/5608/1*10XrmX5JzZE6IChLzfeNBA.png" alt="A Charity has a name, mission, url (to their homepage), imageUrl (to their logo) and a connection to a set of donations."><em>A <strong>Charity</strong> has a name, mission, url (to their homepage), imageUrl (to their logo) and a connection to a set of donations.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/5600/1*IC6AADK05gPngRPTw5rZ-Q.png" alt="A Donation has a charity, user, description, amount, and stripeChargeId."> <em>A <strong>Donation</strong> has a charity, user, description, amount, and stripeChargeId.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/5600/1*s33FGQXXZk1VkI64otxsuQ.png" alt="A CharitySuggestion is like a Charity but is not protected by admin permissions. Anyone can suggest a charity be added to the site."> <em>A <strong>CharitySuggestion</strong> is like a Charity but is not protected by admin permissions. Anyone can suggest a charity be added to the site.</em></p>
 <p>The Schema Designer provides the easiest way to get started with GraphQL. As you were clicking around, Scaphold spun up a GraphQL API for your new schema. Head over the <em>GraphiQL</em> tab and click the *Docs *button on the right to open up your personalized API documentation. As you can see we now have some mutations that allow us to create, update, and delete data of the custom types we just defined.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2212/1*pxG6CZu_Tnb1I_y5EhfEPw.png" alt="Your API adapts to your schema. You can also activate integrations to enable new functionality."></p>
-<p><em>Your API adapts to your schema. You can also activate integrations to enable new functionality.</em></p>
-<h3><a id="Permissions_50"></a>Permissions</h3>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2212/1*pxG6CZu_Tnb1I_y5EhfEPw.png" alt="Your API adapts to your schema. You can also activate integrations to enable new functionality."><em>Your API adapts to your schema. You can also activate integrations to enable new functionality.</em></p>
+<h3><a id="Permissions_42"></a>Permissions</h3>
 <p>No application is complete without access control rules. Let’s finish up our schema by adding a few permissions. Mainly, we want to protect the <strong>Charity</strong> model to guarantee that only high-quality organizations appear in our charity list. In the Schema Designer click the ‘permissions’ link on the Charity type to set its permissions. Your Charity permissions should look like this.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Nqkb-ckne5r2HQz-fI3R-g.png" alt="Every can read and admin users can create, update, and delete."></p>
-<p><em>Every can read and admin users can create, update, and delete.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Nqkb-ckne5r2HQz-fI3R-g.png" alt="Everyone can read and admin users can create, update, and delete."><em>Everyone can read and admin users can create, update, and delete.</em></p>
 <p>For completeness, we’ll add a few more permissions. When you are done, your permissions should look like this.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2776/1*IIlow_RQNIv5n2DpYepgog.png" alt="The ‘me’ option on the RELATED permission only allows the logged in user to update/delete themself."></p>
-<p><em>The ‘me’ option on the RELATED permission only allows the logged in user to update/delete themself.</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*e18uly68b7DY8NEbNn6woQ.png" alt="Everyone can see and create Donations. We need Donations to calculate how much to donate to each charity so once they are created, they can no longer be modified."></p>
-<p><em>Everyone can see and create Donations. We need Donations to calculate how much to donate to each charity so once they are created, they can no longer be modified.</em></p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*b2E61ZwLEp3WX8M8ITp2QQ.png" alt="Users are able to see, create, and update (vote) CharitySuggestions. Only admins can delete them."></p>
-<p><em>Users are able to see, create, and update (vote) CharitySuggestions. Only admins can delete them.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2776/1*IIlow_RQNIv5n2DpYepgog.png" alt="The ‘me’ option on the RELATED permission only allows the logged in user to update/delete themself."><em>The ‘me’ option on the RELATED permission only allows the logged in user to update/delete themself.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*e18uly68b7DY8NEbNn6woQ.png" alt="Everyone can see and create Donations. We need Donations to calculate how much to donate to each charity so once they are created, they can no longer be modified."><em>Everyone can see and create Donations. We need Donations to calculate how much to donate to each charity so once they are created, they can no longer be modified.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*b2E61ZwLEp3WX8M8ITp2QQ.png" alt="Users are able to see, create, and update (vote) CharitySuggestions. Only admins can delete them."><em>Users are able to see, create, and update (vote) CharitySuggestions. Only admins can delete them.</em></p>
 <p>Congrats! With that you now have a GraphQL API backed by Scaphold’s distributed data store. Your Scaphold API also comes with Location Services, File Storage, and Authentication out of the box. If you hop over to the GraphiQL tab, you can start poking around your API and issuing GraphQL queries.</p>
 <p>We can do a lot with the API we just built, but it is not quite enough for our app’s needs. To finish our app, we are going to need payments.</p>
-<h3><a id="Payments_The_Stripe_Integration_76"></a>Payments: The Stripe Integration</h3>
+<h2><a id="Payments_The_Stripe_Integration_60"></a>Payments: The Stripe Integration</h2>
 <p>One of the most powerful aspects of <a href="https://scaphold.io">Scaphold</a> is the ability to easily integrate other services into your GraphQL API. The Stripe integration lets us quickly add secure payments functionality to your API. After activating it you will be able to create payments and perform other actions to your Stripe account without ever having to worry about SDKs.</p>
-<p><strong>Create a Stripe Account</strong></p>
-<p>Head over to <a href="https://stripe.com">Stripe.com</a> to create an account. Once you have an account, you are going to need to give Scaphold your stripe secret and publishable keys. Click <strong>Account Settings</strong> from the dropdown in the top right and then go to the **API Keys **tab.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Sk7pleM6kMcmDK_RKsrrMw.png" alt="">**</p>
+<h3><a id="Create_a_Stripe_Account_64"></a><strong>Create a Stripe Account</strong></h3>
+<p>Head over to <a href="https://stripe.com">Stripe.com</a> to create an account. Once you have an account, you are going to need to give Scaphold your stripe secret and publishable keys. Click <strong>Account Settings</strong> from the dropdown in the top right and then go to the <strong>API Keys</strong> tab.</p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Sk7pleM6kMcmDK_RKsrrMw.png" alt=""></p>
 <p>Once you have your Stripe API keys, go to Scaphold’s integration portal and add the Stripe Integration with your test keys from Stripe.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Whpd8le9SAAhOJPM3Y_fsA.png" alt="Add the Stripe Integration."></p>
-<p><em>Add the Stripe Integration.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Whpd8le9SAAhOJPM3Y_fsA.png" alt="Add the Stripe Integration."><em>Add the Stripe Integration.</em></p>
 <p><strong>Boom!</strong> You’re GraphQL API is now payments enabled. Let’s go see what just happened. Go to the GraphiQL tab and open the documentation explorer by clicking the ‘Docs’ button. You’ll notice that in addition to having queries for the types you defined in the Schema Designer, your API now has queries and mutations for Stripe.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/3488/1*CGs9NaMw8euI0DI1fX1waw.jpeg" alt="You API automatically adapts as your edit your schema and add integrations."></p>
-<p><em>You API automatically adapts as your edit your schema and add integrations.</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/3488/1*CGs9NaMw8euI0DI1fX1waw.jpeg" alt="You API automatically adapts as your edit your schema and add integrations."><em>You API automatically adapts as your edit your schema and add integrations.</em></p>
 <p>You can use these queries just like any others in your API and Scaphold will make sure everything integrates smoothly with Stripe. Use the GraphiQL explorer to your advantage. Stripe’s documentation is now cooked directly into your API and the GraphQL’s type system will improve your experience working with Stripe’s API.</p>
-<h3><a id="Email_The_Mailgunhttpsmailguncom_Integration_100"></a>Email: The <a href="https://mailgun.com">Mailgun</a> Integration</h3>
+<h3><a id="Create_a_Payment_80"></a><strong>Create a Payment</strong></h3>
+<p>Let’s create our first payment using our Stripe integration. The first step in creating a charge on Stripe is to generate a <strong>StripeChargeToken</strong>. A <strong>StripeChargeToken</strong> is a one time use token that can be used in place of a card or bank account to create charges. Tokens allow us to create charges without ever having to store sensitive customer information.</p>
+<p>To create a token issue the following query</p>
+<pre><code>mutation CreateCardToken($input: _CreateStripeCardTokenInput!) {
+  createStripeCardToken(input: $input) {
+    token {
+      id
+      created
+      livemode
+      type
+      used
+      card {
+        id
+        brand
+        exp_year
+      } 
+    }
+  }
+}
+
+// Variables
+{
+  &quot;input&quot;: {
+    &quot;card&quot;: {
+      &quot;exp_month&quot;: 10,
+      &quot;exp_year&quot;: 18,
+      &quot;number&quot;: &quot;4242424242424242&quot;,
+      &quot;cvc&quot;: 123,
+      &quot;name&quot;: &quot;John Doe&quot;
+    }
+  }
+}
+</code></pre>
+<p>This will return the following token payload.</p>
+<pre><code>{
+  &quot;data&quot;: {
+    &quot;createStripeCardToken&quot;: {
+      &quot;token&quot;: {
+        &quot;id&quot;: &quot;tok_18YMGIGZUqmRht8KgWOmhc4H&quot;,
+        &quot;created&quot;: 1468788798,
+        &quot;livemode&quot;: false,
+        &quot;type&quot;: &quot;card&quot;,
+        &quot;used&quot;: false,
+        &quot;card&quot;: {
+          &quot;id&quot;: &quot;card_18YMGIGZUqmRht8Kaw5efQSV&quot;,
+          &quot;brand&quot;: &quot;Visa&quot;,
+          &quot;exp_year&quot;: 2018
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>The card number “4242 4242 4242 4242” is a Visa card number that Stripe uses for testing. Lets charge the card $5 using the id of the returned token.</p>
+<pre><code>mutation CreateStripeCharge($input: _CreateStripeChargeInput!) {
+  createStripeCharge(input: $input) {
+    charge {
+      id
+      amount
+      captured
+      created
+      currency
+      description
+      status
+    }
+  }
+}
+
+// Variables
+{
+ &quot;input&quot;: {
+   &quot;amount&quot;: 500, // Measured in cents
+    &quot;currency&quot;: &quot;USD&quot;,
+    &quot;source&quot;: &quot;tok_18YMGIGZUqmRht8KgWOmhc4H&quot;,
+    &quot;receipt_email&quot;: &quot;[michael@scaphold.io](mailto:michael@scaphold.io)&quot;,
+    &quot;capture&quot;: true // if true captures the charge immediately
+  }
+}
+</code></pre>
+<p>This will return a new charge object.</p>
+<pre><code>{
+  &quot;data&quot;: {
+    &quot;createStripeCharge&quot;: {
+      &quot;charge&quot;: {
+        &quot;id&quot;: &quot;ch_18YMOQGZUqmRht8KMdJw2H54&quot;,
+        &quot;amount&quot;: 500,
+        &quot;captured&quot;: true,
+        &quot;created&quot;: 1468789302,
+        &quot;currency&quot;: &quot;usd&quot;,
+        &quot;description&quot;: null,
+        &quot;status&quot;: &quot;succeeded&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p>You should be able to see the new charge in your <a href="https://dashboard.stripe.com">stripe admin portal</a>! The stripe integration also includes functionality to manage stripe customers, cards, and more.</p>
+<p>Although we can send Stripe receipts using the Stripe integration, we would like to be able to send more personalized emails from our appication’s domain. We can pull this functionality into our API as well using <a href="https://scaphold.io">Scaphold’s</a> Mailgun integration.</p>
+<h2><a id="Email_The_Mailgunhttpsmailguncom_Integration_186"></a>Email: The <a href="https://mailgun.com">Mailgun</a> Integration</h2>
 <p>To finish up, we are going to add email support via the <a href="https://www.mailgun.com/">Mailgun</a> Integration. Go to <a href="https://mailgun.com">Mailgun</a>, create and account, and setup a domain. Mailgun will ask you to verify your domain by creating TXT, CNAME, and MX DNS records to send, track, and receive email via your DNS provider. Once you have set up your Mailgun account and domain, you should see a screen that looks like this:</p>
 <p><img src="https://medium2.global.ssl.fastly.net/max/2628/1*GyoF9XCQ2M827h_yGT0TZg.png" alt=""></p>
 <p>To finish adding the Mailgun integration, give Scaphold your API Key and domain name.</p>
-<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Lk-oWiDn3w3l4isW2_ifUQ.png" alt="Mailgun Credentials"></p>
-<p><em>Mailgun Credentials</em></p>
+<p><img src="https://medium2.global.ssl.fastly.net/max/2000/1*Lk-oWiDn3w3l4isW2_ifUQ.png" alt="Mailgun Credentials"><em>Mailgun Credentials</em></p>
+<h3><a id="Send_an_email_196"></a><strong>Send an email</strong></h3>
 <p>Awesome! Now you can send email and manage mailing lists directly from your GraphQL API. Go checkout the new functionality in the GraphiQL documentation explorer!</p>
-<p><strong>Congrats! Your API, complete with payments and email functionality, is ready for your Angular application! Take a look at <a href="https://give.scaphold.io">what we will build</a> in <a href="https://scaphold.io/#/blog/">part 2 of this tutorial</a>!</strong></p>
+<p>You can send an email with the following query</p>
+<pre><code>mutation SendMailgunEmail($email: _SendMailgunEmailInput!){
+  sendMailgunEmail(input: $email) {
+    id
+    message
+  }
+}
+
+// Variables
+{
+ &quot;email&quot;: {
+   &quot;to&quot;: [&quot;[michael@scaphold.io](mailto:michael@scaphold.io)&quot;],
+    &quot;from&quot;: &quot;[give@scaphold.io](mailto:give@scaphold.io)&quot;,
+    &quot;subject&quot;: &quot;Welcome to Scaphold!&quot;,
+    &quot;text&quot;: &quot;Build awesome apps with our GraphQL powered backend services!&quot;,
+    &quot;isHtml&quot;: false
+  }
+}
+</code></pre>
+<p>You can manage mailing lists as well. Let’s create a mailing list.</p>
+<pre><code>mutation createMailgunMailingListQuery($list: _CreateMailgunMailingListInput!){
+  createMailgunMailingList(input: $list){ 
+    message
+    list { 
+      created_at
+      address
+      members_count
+      description
+      name 
+    }
+  }
+}
+
+// Variables
+{
+  &quot;address&quot;: &quot;contact@scaphold.io&quot;,
+  &quot;name&quot;: &quot;Contact&quot;,
+  &quot;description&quot;: &quot;Let us know what you think!&quot;,
+  &quot;access_level&quot;: &quot;members&quot;
+}
+</code></pre>
+<p>Add a user to the mailing list</p>
+<pre><code>mutation addMailgunMailingListMemberQuery($input: _AddMailgunMailingListMemberInput!){
+  addMailgunMailingListMember(input: $input){ 
+    message
+    list { 
+      created_at
+      address
+      members_count
+      description
+      name 
+    }
+  }
+}
+
+// Variables
+{
+  &quot;input&quot;: {
+   &quot;list&quot;: {
+     &quot;address&quot;: &quot;contact[@scaphold.io](mailto:hh@scaphold.io)&quot;
+    },
+    &quot;member&quot;: {
+      &quot;address&quot;: &quot;[michael@scaphold.io](mailto:michael@scaphold.io)&quot;,
+      &quot;name&quot;: &quot;Michael&quot;,
+      &quot;vars&quot;: {
+       &quot;city&quot;: &quot;Seattle&quot;,
+        &quot;gender&quot;: &quot;male&quot;
+      },
+      &quot;subscribed&quot;: true,
+      &quot;upsert&quot;: true  
+      // if true, updates the user if it exists
+    }
+  }
+}
+</code></pre>
+<p>A mailing list gives you an easy way to send emails to large groups of people. Each email sent to <a href="mailto:contact@scaphold.io">contact@scaphold.io</a> will now be sent to evey member in the list. The mailgun integration offers more functionality than seen here. Use GraphiQL to checkout the other mutations and queries available.</p>
+<h2><a id="Congrats_280"></a><strong>Congrats!</strong></h2>
+<p><strong>Your API is now complete with payments and email functionality!</strong></p>
+<p>It is now time to start building our Angular2 Application! Check out our <a href="https://scaphold.io/blog">full tutorial</a> for help getting started! The tutorial will walk you through how we built <a href="https://give.scaphold.io">give.scaphold.io</a>. We will use the GraphQL API that we just built on Scaphold to power our site, process payments, and send emails.</p>
+<p>Thanks for your time and please let me know how I can improve these tutorials! Have a good one!</p>
   </md-card>
 </div>

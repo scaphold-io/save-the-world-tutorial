@@ -1,5 +1,5 @@
 const config = {
-    url: 'https://api.scaphold.io/graphql/save-the-world'
+    url: 'http://127.0.0.1:3000/graphql/save-the-world'
 };
 
 export default config;

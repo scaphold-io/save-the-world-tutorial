@@ -25,6 +25,10 @@ a {
 md-card {
     background:rgba(255,255,255,0.96)!important;
     margin-bottom: 10px;
+
+    md-card-content {
+        font-size: 15px;
+    }
 }
 
 .alert-danger {

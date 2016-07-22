@@ -1,0 +1,75 @@
+<div class="donation-completed" *ngIf="donated">
+    <md-card>
+        <md-card-title>Thank You!</md-card-title>
+        <md-card-content>
+            You're donation is helping make the world a better place. At the end of the month, we will send your donation directly to {{ donation.charity.name }}!
+            Keep being awesome!
+        </md-card-content>
+        <md-card-actions>
+            <button md-button (click)="resetDonation()">Make Another Donation!</button>
+        </md-card-actions>
+    </md-card>
+</div>
+<div class="donation-form" *ngIf="!donated">
+    <form (submit)="onSubmit($event)" id="paymentForm" #paymentForm="ngForm">
+        <md-card>
+            <md-card-title>
+                Pick a charity
+            </md-card-title>
+            <md-card-content *ngIf="charities && charities.viewer && charities.viewer.allCharitys">
+                <charity-row *ngFor="let charity of charities.viewer.allCharitys.edges" [charity]="charity.node" (selected)="onCharitySelected(charity.node)" [isSelected]="charity.node.id==donation.charity.id"></charity-row>
+            </md-card-content>
+        </md-card>
+        <md-card>
+            <md-card-title>
+                How much and why?
+            </md-card-title>
+            <md-card-content>
+                <div class="row">
+                    <md-input align="end" class="col-sm-3 col-xs-12" placeholder="USD" type="number" required [(ngModel)]="donation.amount">
+                        <span md-prefix>$&nbsp;</span>
+                        <span md-suffix>.00</span>
+                    </md-input>
+                    <!--<label for="donation-description"></label>-->
+                    <md-input id="donation-description" class="col-sm-9 col-xs-12" placeholder="Say something about this donation!" type="text" [(ngModel)]="donation.description"></md-input>
+                </div>    
+            </md-card-content>
+        </md-card>
+        <section>
+            <div *ngIf="!auth.credential.token" class="row">
+                <scaphold-register-form class="col-md-6"></scaphold-register-form>
+                <scaphold-login-form class="col-md-6"></scaphold-login-form>
+            </div>
+            <md-card *ngIf="auth.credential.token">
+                <md-card-title>
+                    Thank you! 
+                </md-card-title>
+                <md-card-content *ngIf="auth.user">
+                    We will send a receipt to {{auth.user.username}}
+                </md-card-content>
+                <md-card-actions>
+                <button (click)="auth.logout()" md-button>Not you?</button>
+                </md-card-actions>
+            </md-card>
+        </section>
+        <md-card>
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <md-card-title>Payment Information</md-card-title>
+                        <md-card-content>
+                            <p>We use stripe to securly process your donation. We never store your card information!</p>
+                            <div *ngFor="let error of errors" class="alert-danger">
+                                <p>{{error.message}}</p>
+                            </div>
+                            <md-input id="name" class="col-sm-12" placeholder="Full Name" type="text" required name="name" [(ngModel)]="donation.card.name"></md-input>
+                            <md-input id="number" class="col-sm-12" placeholder="Card number" type="text" required name="number" [(ngModel)]="donation.card.number"></md-input>
+                            <md-input id="expiry" class="col-sm-6" placeholder="MM/YY" type="text" required name="expiry" [(ngModel)]="donation.card.expiry"></md-input>
+                            <md-input id="cvc" class="col-sm-6" placeholder="CVC" type="number" required name="cvc" [(ngModel)]="donation.card.cvc"></md-input>
+                        </md-card-content>
+                    </div>
+                    <div class="col-sm-6 col-xs-12 card-wrapper"></div>
+                    <button class="col-sm-12" [disabled]="!paymentForm.form.valid" md-button type="submit">Donate</button>
+                </div>
+        </md-card>
+    </form>
+</div>
